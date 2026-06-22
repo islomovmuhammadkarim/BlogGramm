@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+{% block title %}Xabarlar — BlogGram{% endblock %}
+
+{% block content %}
+<div class="dm2-wrap">
+  <div class="dm2-head">
+    <h1>Xabarlar</h1>
+  </div>
+
+  <div class="dm2-search-wrap">
+    <input class="dm2-search" id="dmSearch" type="text" placeholder="Qidirish..." autocomplete="off">
+  </div>
+
+  <div id="searchResults" class="dm2-list" style="display:none"></div>
+
+  {% if contacts %}
+  <div class="dm2-list" id="dmContactList">
+    {% for contact in contacts %}
+    <a href="/dm/{{ contact.username }}/" class="dm2-contact" data-name="{{ contact.username|lower }} {{ contact.first_name|lower }}">
+      <div class="dm2-avatar">
+        {% if contact.profile.avatar %}
+          <img src="{{ contact.profile.avatar.url }}" alt="">
+        {% else %}
+          {{ contact.username|first|upper }}
+        {% endif %}
+      </div>
+      <div class="dm2-info">
+        <span class="dm2-username">{{ contact.username }}</span>
+        {% if contact.first_name %}<span class="dm2-fullname">{{ contact.first_name }} {{ contact.last_name }}</span>{% endif %}
+      </div>
+      {% if contact.unread_count %}<span class="dm2-badge">{{ contact.unread_count }}</span>{% endif %}
+    </a>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="dm2-empty">
+    <p>Hali suhbat yo'q. Qidirib yangi suhbat boshlang!</p>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const searchInput = document.getElementById('dmSearch');
+const searchResults = document.getElementById('searchResults');
+const contactList = document.getElementById('dmContactList');
+let timeout;
+
+searchInput.addEventListener('input', function() {
+  const q = this.value.trim();
+  clearTimeout(timeout);
+
+  if (q.length < 2) {
+    searchResults.style.display = 'none';
+    if (contactList) contactList.style.display = '';
+    return;
+  }
+
+  // local filter
+  if (contactList) {
+    contactList.querySelectorAll('.dm2-contact').forEach(el => {
+      el.style.display = el.dataset.name.includes(q.toLowerCase()) ? '' : 'none';
+    });
+  }
+
+  // global search
+  timeout = setTimeout(async () => {
+    try {
+      const r = await fetch(`/api/search-users/?q=${encodeURIComponent(q)}`);
+      if (!r.ok) return;
+      const data = await r.json();
+      if (data.users && data.users.length) {
+        searchResults.innerHTML = data.users.map(u => `
+          <a href="/dm/${u.username}/" class="dm2-contact">
+            <div class="dm2-avatar">${u.avatar ? `<img src="${u.avatar}">` : u.username[0].toUpperCase()}</div>
+            <div class="dm2-info">
+            <span class="dm2-username">${u.username}</span>
+            ${u.name ? `<span class="dm2-fullname">${u.name}</span>` : ''}
+          </div>
+        </a>
+      `).join('');
+      searchResults.style.display = '';
+    } else {
+      searchResults.innerHTML = '<p class="dm2-no-result">Topilmadi</p>';
+      searchResults.style.display = '';
+    }
+    } catch(e) {}
+  }, 300);
+});
+
+searchInput.addEventListener('blur', () => {
+  setTimeout(() => {
+    if (!searchInput.value.trim()) {
+      searchResults.style.display = 'none';
+      if (contactList) contactList.style.display = '';
+    }
+  }, 200);
+});
+</script>
+{% endblock %}

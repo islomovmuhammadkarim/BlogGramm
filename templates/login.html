@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% block title %}Kirish — BlogGram{% endblock %}
+{% block content %}
+<section class="login-page">
+  <div class="login-card">
+    <div class="login-icon">
+      <svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.5 20.118a7.5 7.5 0 0 1 15 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.5-1.632Z"/></svg>
+    </div>
+    <h1>BlogGram'ga kirish</h1>
+    <p class="login-desc">Telegram akkauntingiz orqali xavfsiz kiring.<br>Parol kerak emas.</p>
+    <a id="loginBtn" class="tg-btn" href="#" target="_blank">
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12s5.37 12 12 12 12-5.37 12-12S18.63 0 12 0zm5.53 8.15l-1.82 8.57c-.14.62-.5.77-.99.48l-2.75-2.03-1.32 1.28c-.15.15-.27.27-.56.27l.2-2.8 5.1-4.6c.22-.2-.05-.3-.34-.13l-6.3 3.97-2.72-.85c-.59-.18-.6-.59.12-.87l10.63-4.1c.49-.18.92.12.76.87z"/></svg>
+      Open Telegram
+    </a>
+    <p id="login-status" class="login-status"></p>
+    <p id="login-expired" class="login-expired" style="display:none">
+      Muddati tugadi. <a href="/login/">Qayta urinish</a>
+    </p>
+    <div class="login-footer">
+      <span>🔒</span> Ma'lumotlaringiz xavfsiz saqlanadi
+    </div>
+
+    <details class="admin-login-toggle">
+      <summary>Admin login</summary>
+      <form method="post" class="admin-login-form">
+        {% csrf_token %}
+        {% if error %}<p class="login-error">{{ error }}</p>{% endif %}
+        <input type="text" name="username" placeholder="Username" required>
+        <input type="password" name="password" placeholder="Password" required>
+        <button type="submit" class="btn primary">Kirish</button>
+      </form>
+    </details>
+  </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const btn = document.getElementById('loginBtn');
+const statusEl = document.getElementById('login-status');
+const expiredEl = document.getElementById('login-expired');
+let pollInterval = null;
+
+(async function() {
+  const savedToken = sessionStorage.getItem('login_token');
+  if (savedToken) {
+    statusEl.textContent = '⏳ Telegram orqali tasdiqlang...';
+    const resp = await fetch('/api/auth/init/');
+    const data = await resp.json();
+    btn.href = data.deep_link;
+    sessionStorage.setItem('login_token', data.token);
+    startPolling(data.token);
+    return;
+  }
+  const resp = await fetch('/api/auth/init/');
+  const data = await resp.json();
+  btn.href = data.deep_link;
+  sessionStorage.setItem('login_token', data.token);
+  btn.addEventListener('click', function() {
+    statusEl.textContent = '⏳ Telegram orqali tasdiqlang...';
+    setTimeout(() => startPolling(data.token), 1000);
+  });
+})();
+
+function startPolling(token) {
+  if (pollInterval) clearInterval(pollInterval);
+  pollInterval = setInterval(() => checkStatus(token), 2000);
+}
+
+async function checkStatus(token) {
+  try {
+    const resp = await fetch(`/api/auth/status/?token=${token}`);
+    const data = await resp.json();
+    if (data.status === 'verified') {
+      clearInterval(pollInterval);
+      sessionStorage.removeItem('login_token');
+      statusEl.textContent = '✅ Muvaffaqiyatli!';
+      window.location.href = data.redirect || '/';
+    } else if (data.status === 'expired' || data.status === 'error') {
+      clearInterval(pollInterval);
+      sessionStorage.removeItem('login_token');
+      statusEl.textContent = '';
+      expiredEl.style.display = 'block';
+    }
+  } catch(e) {}
+}
+</script>
+{% endblock %}

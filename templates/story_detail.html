@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block title %}Story — {{ story.author.username }}{% endblock %}
+
+{% block content %}
+<div class="story-detail">
+  <div class="story-detail-card">
+    <div class="story-detail-head">
+      <a href="/u/{{ story.author.username }}/" class="story-author">
+        <span class="mini-avatar">{% if story.author.profile.avatar %}<img src="{{ story.author.profile.avatar.url }}">{% else %}{{ story.author.username|first|upper }}{% endif %}</span>
+        <span>{{ story.author.username }}</span>
+      </a>
+      <span class="dash-muted">{{ story.created|timesince }} ago</span>
+    </div>
+
+    {% if story.image %}
+    <img src="{{ story.image.url }}" class="story-detail-img">
+    {% endif %}
+
+    {% if story.body %}
+    <p class="story-detail-body">{{ story.body }}</p>
+    {% endif %}
+
+    <div class="story-actions">
+      <form method="post" style="display:inline">{% csrf_token %}
+        <input type="hidden" name="action" value="like">
+        <button type="submit" class="like-btn {% if liked %}liked{% endif %}">{% if liked %}♥{% else %}♡{% endif %} {{ story.likes.count }}</button>
+      </form>
+      <span class="story-stat">👁 {{ viewers.count }}</span>
+      <span class="story-stat">💬 {{ comments.count }}</span>
+    </div>
+
+    <!-- Ko'rganlar -->
+    <details class="story-section">
+      <summary>👁 Ko'rganlar ({{ viewers.count }})</summary>
+      <div class="story-viewers">
+        {% for v in viewers %}
+        <a href="/u/{{ v.user.username }}/">{{ v.user.username }}</a>
+        {% endfor %}
+      </div>
+    </details>
+
+    <!-- Izohlar -->
+    <div class="story-section">
+      <h3>💬 Izohlar</h3>
+      {% for c in comments %}
+      <div class="story-comment">
+        <a href="/u/{{ c.author.username }}/" class="comment-author">{{ c.author.username }}</a>
+        <span class="dash-muted">· {{ c.created|timesince }}</span>
+        <p>{{ c.body }}</p>
+      </div>
+      {% empty %}
+      <p class="dash-muted">Hali izoh yo'q</p>
+      {% endfor %}
+
+      <form method="post" class="story-comment-form">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="comment">
+        <input type="text" name="body" placeholder="Izoh yozing..." required>
+        <button type="submit" class="btn primary">→</button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

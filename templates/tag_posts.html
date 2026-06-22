@@ -1,0 +1,5 @@
+{%extends 'base.html'%}{%block title%}#{{tag.name}}{%endblock%}{%block content%}
+<div class="container"><h1>#{{tag.name}}</h1>
+{%if posts%}<div class="feed-list">{%for post in posts%}
+<a href="/post/{{post.slug}}/" class="feed-item"><div class="feed-item-left"><h2 class="feed-item-title">{{post.title}}</h2><p class="feed-item-body">{{post.body|striptags|truncatewords:15}}</p><span class="feed-date">{{post.author.username}}</span></div></a>
+{%endfor%}</div>{%else%}<p class="empty-state">Bu tegda postlar yo'q.</p>{%endif%}</div>{%endblock%}

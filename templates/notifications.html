@@ -1,0 +1,9 @@
+{%extends 'base.html'%}{%block title%}Notifications{%endblock%}{%block content%}
+<div class="container"><h1>🔔 Bildirishnomalar</h1>
+<div class="notif-list">{%for n in notifications%}
+<div class="notif-item {%if not n.read%}unread{%endif%}">
+<a href="/u/{{n.actor.username}}/" class="notif-actor">{{n.actor.username}}</a>
+{%if n.notif_type == 'like'%} postingizni yoqtirdi{%elif n.notif_type == 'comment'%} izoh qoldirdi{%elif n.notif_type == 'follow'%} sizni kuzatmoqda{%elif n.notif_type == 'repost'%} repost qildi{%elif n.notif_type == 'announce'%} e'lon yubordi 📣{%endif%}
+{%if n.post%} — <a href="/post/{{n.post.slug}}/">{{n.post.title|truncatewords:5}}</a>{%endif%}
+<span class="notif-time">{{n.created|timesince}} oldin</span>
+</div>{%empty%}<p class="empty-state">Yangi bildirishnomalar yo'q.</p>{%endfor%}</div></div>{%endblock%}

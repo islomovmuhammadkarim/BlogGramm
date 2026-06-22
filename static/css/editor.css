@@ -1,0 +1,32 @@
+/* ═══════════════════════════════════════
+   BlogGram — Editor Styles
+   ═══════════════════════════════════════ */
+
+.editor-page { max-width: 760px; margin: 0 auto; padding: 1.5rem 0; }
+.editor-form { display: flex; flex-direction: column; gap: 1rem; }
+.editor-header { display: flex; align-items: center; gap: 1rem; }
+.editor-title { flex: 1; font-size: 1.6rem; font-weight: 700; background: none; border: none; border-bottom: 2px solid var(--border); color: var(--accent); outline: none; padding: 0.5rem 0; letter-spacing: -0.02em; transition: border-color .2s; }
+.editor-title:focus { border-color: var(--accent); }
+.editor-title::placeholder { color: var(--muted); }
+.editor-cover-wrap { position: relative; }
+.editor-meta { display: flex; gap: 0.6rem; align-items: center; flex-wrap: wrap; }
+.editor-select { padding: 0.5rem 0.8rem; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; color: var(--text); font-size: 0.82rem; outline: none; cursor: pointer; }
+.editor-cover-btn { display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.82rem; color: var(--muted); cursor: pointer; padding: 0.5rem 0.8rem; border: 1px dashed var(--border); border-radius: 8px; transition: border-color .2s; }
+.editor-cover-btn:hover { border-color: var(--accent); color: var(--text); }
+.editor-cover-btn input { display: none; }
+.editor-cover-preview { width: 100%; max-height: 200px; object-fit: cover; border-radius: 8px; margin-top: 0.5rem; }
+.editor-toolbar-wrap { position: sticky; top: 56px; z-index: 50; background: var(--bg); padding: 0.3rem 0; }
+#toolbar { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 0.4rem 0.5rem; display: flex; flex-wrap: wrap; gap: 0.2rem; }
+#toolbar .ql-formats { margin-right: 0.3rem; display: flex; align-items: center; }
+#editor { min-height: 350px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; font-size: 0.95rem; color: var(--text); line-height: 1.7; }
+#editor .ql-editor { min-height: 350px; padding: 1.2rem; }
+#editor .ql-editor.ql-blank::before { color: var(--muted); font-style: normal; }
+.ql-snow .ql-stroke { stroke: var(--muted); }
+.ql-snow .ql-fill { fill: var(--muted); }
+.ql-snow .ql-picker-label { color: var(--muted); }
+.ql-snow .ql-active .ql-stroke { stroke: var(--accent); }
+.ql-snow .ql-active .ql-fill { fill: var(--accent); }
+.ql-snow .ql-picker-options { background: var(--surface); border-color: var(--border); }
+.ql-snow .ql-tooltip { background: var(--surface); border-color: var(--border); color: var(--text); box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
+.ql-snow .ql-tooltip input { background: var(--bg); border-color: var(--border); color: var(--text); }
+.editor-bottom { display: flex; gap: 0.6rem; justify-content: flex-end; padding: 0.5rem 0; position: sticky; bottom: 0; background: var(--bg); border-top: 1px solid var(--border); margin-top: 0.5rem; padding-top: 1rem; }

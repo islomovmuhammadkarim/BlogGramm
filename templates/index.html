@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+{% block title %}BlogGram — A place for thoughtful writing{% endblock %}
+
+{% block content %}
+
+<!-- Hero -->
+<section class="hero-section">
+  <div class="hero-badge" data-i18n="hero-badge">✦ Open platform for writers</div>
+  <h1 class="hero-title" data-i18n="hero-title">Ideas worth<br><span class="hero-accent">reading.</span></h1>
+  <p class="hero-sub" data-i18n="hero-sub">A clean space for developers, designers, and thinkers to share what they know.</p>
+  <div class="hero-actions">
+    <a href="/explore/" class="btn primary" data-i18n="hero-explore">Explore posts</a>
+    {% if not user.is_authenticated %}
+    <a href="/register/" class="btn" data-i18n="hero-start">Start writing →</a>
+    {% else %}
+    <a href="/post/new/" class="btn" data-i18n="hero-write">Write something →</a>
+    {% endif %}
+  </div>
+</section>
+
+<!-- Features -->
+<section class="features-section">
+  <div class="glass-container">
+    <div data-text="Write freely" style="--r:-15;" class="glass">
+      <span class="glass-icon">🪶</span>
+      <p class="glass-desc">Your thoughts, unfiltered. A distraction-free canvas.</p>
+    </div>
+    <div data-text="Discover" style="--r:5;" class="glass">
+      <span class="glass-icon">🌐</span>
+      <p class="glass-desc">Curated ideas from minds that inspire you.</p>
+    </div>
+    <div data-text="Connect" style="--r:-5;" class="glass">
+      <span class="glass-icon">🔗</span>
+      <p class="glass-desc">Follow creators. Build your orbit of thinkers.</p>
+    </div>
+    <div data-text="Converse" style="--r:15;" class="glass">
+      <span class="glass-icon">⚡</span>
+      <p class="glass-desc">Spark real dialogues, not just reactions.</p>
+    </div>
+  </div>
+</section>
+
+<!-- Latest posts -->
+{% if posts %}
+<section class="latest-section">
+  <div class="latest-header">
+    <p class="section-title" data-i18n="latest-posts">Latest posts</p>
+    <a href="/explore/" class="latest-all" data-i18n="view-all">View all →</a>
+  </div>
+  <div class="post-grid">
+    {% for post in posts %}
+    <a href="/post/{{ post.slug }}/" class="post-card">
+      <div class="post-card-img">
+        {% if post.cover %}
+          <img src="{{ post.cover.url }}" alt="{{ post.title }}">
+        {% else %}
+          <div class="post-card-placeholder">{{ post.title|first|upper }}</div>
+        {% endif %}
+      </div>
+      <div class="post-card-body">
+        <div class="post-card-author">
+          <span class="mini-avatar">{% if post.author.profile.avatar %}<img src="{{ post.author.profile.avatar.url }}" alt="">{% else %}{{ post.author.username|first|upper }}{% endif %}</span>
+          <span class="author-link">{{ post.author.username }}</span>
+        </div>
+        <h2>{% if lang == "uz" %}{{ post.title_uz|default:post.title }}{% elif lang == "ru" %}{{ post.title_ru|default:post.title }}{% else %}{{ post.title_en|default:post.title }}{% endif %}</h2>
+        <div class="post-card-meta">{{ post.created|date:"M d, Y" }} · ♥ {{ post.likes_count }}</div>
+        <p>{% if lang == "uz" %}{{ post.body_uz|default:post.body|striptags|truncatewords:12 }}{% elif lang == "ru" %}{{ post.body_ru|default:post.body|striptags|truncatewords:12 }}{% else %}{{ post.body_en|default:post.body|striptags|truncatewords:12 }}{% endif %}</p>
+      </div>
+    </a>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
+
+<!-- CTA -->
+{% if not user.is_authenticated %}
+<section class="cta-section">
+  <h2 data-i18n="cta-title">Ready to share your ideas?</h2>
+  <p data-i18n="cta-sub">Join BlogGram and start writing today. It's free.</p>
+  <a href="/register/" class="btn primary" data-i18n="cta-btn">Create account</a>
+</section>
+{% endif %}
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+const nav = document.querySelector('.topnav');
+nav.classList.add('transparent');
+const hero = document.querySelector('.hero-section');
+window.addEventListener('scroll', () => {
+  if (window.scrollY > hero.offsetHeight - 60) {
+    nav.classList.remove('transparent');
+  } else {
+    nav.classList.add('transparent');
+  }
+});
+</script>
+{% endblock %}

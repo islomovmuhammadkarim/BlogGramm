@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Delete Post — BlogGram{% endblock %}
+
+{% block content %}
+<section class="auth-section">
+  <h1 data-i18n="delete-title">Delete Post</h1>
+  <p style="color:var(--body-text);margin-bottom:1.5rem">
+    <span data-i18n="delete-confirm">Are you sure you want to delete</span>
+    <strong>"{{ post.title }}"</strong>?
+    <span data-i18n="cannot-undo">This cannot be undone.</span>
+  </p>
+  <form method="post">
+    {% csrf_token %}
+    <button type="submit" class="btn" style="border-color:#e05;color:#e05" data-i18n="yes-delete">Yes, delete</button>
+    <a href="/post/{{ post.slug }}/" class="btn" style="margin-left:0.5rem" data-i18n="cancel">Cancel</a>
+  </form>
+</section>
+{% endblock %}

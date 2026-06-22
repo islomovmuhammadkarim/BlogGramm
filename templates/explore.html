@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}Explore — BlogGram{% endblock %}
+
+{% block content %}
+<div class="explore-header">
+  <h1 data-i18n="explore">Explore</h1>
+  <p data-i18n="explore-sub">Discover posts from everyone on BlogGram</p>
+</div>
+
+<div class="explore-filters">
+  <form class="explore-search" method="get" action="/explore/">
+    <input type="text" name="q" data-i18n="search-placeholder" placeholder="Search..." value="{{ q }}" autocomplete="off">
+    <button type="submit">🔍</button>
+  </form>
+  <div class="explore-cats">
+    <a href="/explore/" class="cat-chip {% if not current_cat %}active{% endif %}" data-i18n="all">All</a>
+    {% for cat in categories %}
+    <a href="/explore/?cat={{ cat.slug }}" class="cat-chip {% if current_cat == cat.slug %}active{% endif %}">{% if lang == "uz" %}{{ cat.name_uz|default:cat.name }}{% elif lang == "ru" %}{{ cat.name_ru|default:cat.name }}{% else %}{{ cat.name_en|default:cat.name }}{% endif %}</a>
+    {% endfor %}
+  </div>
+</div>
+
+{% if posts %}
+<div class="bento-grid">
+  {% for post in posts %}
+  <a href="/post/{{ post.slug }}/" class="bento-card bento-{{ forloop.counter }}">
+    <div class="bento-img">
+      {% if post.cover %}
+        <img src="{{ post.cover.url }}" alt="{{ post.title }}">
+      {% else %}
+        <div class="bento-placeholder">{{ post.title|first|upper }}</div>
+      {% endif %}
+    </div>
+    <div class="bento-body">
+      <div class="bento-author">
+        <span class="mini-avatar">{% if post.author.profile.avatar %}<img src="{{ post.author.profile.avatar.url }}" alt="">{% else %}{{ post.author.username|first|upper }}{% endif %}</span>
+        <span>{{ post.author.username }}</span>
+        {% if forloop.first %}<span class="explore-badge">Featured</span>{% endif %}
+      </div>
+      <h2>{% if lang == "uz" %}{{ post.title_uz|default:post.title }}{% elif lang == "ru" %}{{ post.title_ru|default:post.title }}{% else %}{{ post.title_en|default:post.title }}{% endif %}</h2>
+      <p>{% if lang == "uz" %}{{ post.body_uz|default:post.body|striptags|truncatewords:20 }}{% elif lang == "ru" %}{{ post.body_ru|default:post.body|striptags|truncatewords:20 }}{% else %}{{ post.body_en|default:post.body|striptags|truncatewords:20 }}{% endif %}</p>
+      <div class="bento-meta">{{ post.created|date:"M d, Y" }} · ♥ {{ post.likes_count }}</div>
+    </div>
+  </a>
+  {% endfor %}
+</div>
+{% else %}
+<p class="empty-state">No posts yet. <a href="/register/">Join and write the first one!</a></p>
+{% endif %}
+{% endblock %}

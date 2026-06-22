@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}About — mrton{% endblock %}
+
+{% block content %}
+{% if about %}
+<section class="about-section">
+  <div class="about-top">
+    <div class="avatar-circle">
+      {% if about.avatar %}
+        <img src="{{ about.avatar.url }}" alt="{{ about.name }}">
+      {% else %}
+        {{ about.name|first|upper }}
+      {% endif %}
+    </div>
+    <div>
+      <h1>{{ about.name }}</h1>
+      <p class="about-role">{{ about.role }}</p>
+      {% if about.location %}<p class="about-location">📍 {{ about.location }}</p>{% endif %}
+    </div>
+  </div>
+
+  <p>{{ about.bio }}</p>
+  {% if about.bio2 %}<p>{{ about.bio2 }}</p>{% endif %}
+
+  <div class="about-links">
+    {% if about.github %}<a href="{{ about.github }}" target="_blank" class="about-link">GitHub →</a>{% endif %}
+    {% if about.telegram %}<a href="{{ about.telegram }}" target="_blank" class="about-link">Telegram →</a>{% endif %}
+  </div>
+
+  <div class="about-stats">
+    <div class="stat">
+      <span class="stat-num">{{ post_count }}</span>
+      <span class="stat-label">Posts</span>
+    </div>
+    <div class="stat">
+      <span class="stat-num">{{ comment_count }}</span>
+      <span class="stat-label">Comments</span>
+    </div>
+  </div>
+</section>
+{% endif %}
+{% endblock %}

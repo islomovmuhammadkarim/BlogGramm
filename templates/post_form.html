@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+{% block title %}{{ action }} Post — BlogGram{% endblock %}
+
+{% block content %}
+<section class="editor-page">
+  <form method="post" enctype="multipart/form-data" id="postForm" class="editor-form">
+    {% csrf_token %}
+    <div class="editor-header">
+      <input type="text" name="title" class="editor-title" value="{{ post.title|default:'' }}" required data-i18n="label-title" placeholder="Title..." autocomplete="off">
+    </div>
+    <div class="editor-cover-wrap">
+      <div class="editor-meta">
+        <label class="editor-cover-btn" id="coverLabel">
+          🖼 <span data-i18n="label-cover">Cover</span>
+          <input type="file" name="cover" accept="image/*" onchange="previewCover(this)">
+        </label>
+        <select name="category" class="editor-select">
+          <option value="">{% if lang == "uz" %}Kategoriya...{% elif lang == "ru" %}Категория...{% else %}Category...{% endif %}</option>
+          {% for cat in categories %}
+          <option value="{{ cat.id }}" {% if post.category_id == cat.id %}selected{% endif %}>{% if lang == "uz" %}{{ cat.name_uz|default:cat.name }}{% elif lang == "ru" %}{{ cat.name_ru|default:cat.name }}{% else %}{{ cat.name_en|default:cat.name }}{% endif %}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <img id="coverPreview" class="editor-cover-preview" {% if post.cover %}src="{{ post.cover.url }}"{% endif %} style="{% if not post.cover %}display:none{% endif %}">
+    </div>
+    <div class="editor-toolbar-wrap" id="toolbarWrap">
+      <div id="toolbar">
+        <span class="ql-formats">
+          <select class="ql-header">
+            <option value="">¶</option>
+            <option value="1">H1</option>
+            <option value="2">H2</option>
+            <option value="3">H3</option>
+          </select>
+        </span>
+        <span class="ql-formats">
+          <button class="ql-bold"></button>
+          <button class="ql-italic"></button>
+          <button class="ql-underline"></button>
+          <button class="ql-strike"></button>
+        </span>
+        <span class="ql-formats">
+          <button class="ql-list" value="ordered"></button>
+          <button class="ql-list" value="bullet"></button>
+          <button class="ql-blockquote"></button>
+          <button class="ql-code-block"></button>
+        </span>
+        <span class="ql-formats">
+          <button class="ql-link"></button>
+          <button class="ql-image"></button>
+          <button class="ql-video"></button>
+        </span>
+        <span class="ql-formats">
+          <select class="ql-align"></select>
+          <select class="ql-color"></select>
+          <select class="ql-background"></select>
+        </span>
+        <span class="ql-formats">
+          <button class="ql-clean"></button>
+        </span>
+      </div>
+    </div>
+    <div id="editor">{{ post.body|default:''|safe }}</div>
+    <textarea name="body" id="bodyInput" style="display:none"></textarea>
+    <input type="hidden" name="action" id="actionInput" value="publish">
+    <div class="editor-bottom">
+      <label class="editor-schedule"><input type="datetime-local" name="scheduled_at" class="editor-schedule-input"> 📅</label>
+      <button type="submit" class="btn" id="draftBtn" data-i18n="draft">📝 Draft</button>
+      <button type="submit" class="btn primary" id="publishBtn" data-i18n="publish">🚀 Publish</button>
+    </div>
+  </form>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<link href="https://cdn.quilljs.com/1.3.7/quill.snow.css" rel="stylesheet">
+<script src="https://cdn.quilljs.com/1.3.7/quill.min.js"></script>
+<script>
+const quill = new Quill('#editor', {
+  theme: 'snow',
+  modules: { toolbar: '#toolbar' },
+  placeholder: 'Yozishni boshlang...'
+});
+
+document.getElementById('postForm').addEventListener('submit', function(e) {
+  document.getElementById('bodyInput').value = quill.root.innerHTML;
+});
+
+document.getElementById('draftBtn').addEventListener('click', function() {
+  document.getElementById('actionInput').value = 'draft';
+});
+document.getElementById('publishBtn').addEventListener('click', function() {
+  document.getElementById('actionInput').value = 'publish';
+});
+
+function previewCover(input) {
+  const preview = document.getElementById('coverPreview');
+  if (input.files && input.files[0]) {
+    const reader = new FileReader();
+    reader.onload = e => { preview.src = e.target.result; preview.style.display = 'block'; };
+    reader.readAsDataURL(input.files[0]);
+  }
+}
+
+// YouTube URL paste → auto embed
+quill.clipboard.addMatcher(Node.TEXT_NODE, function(node, delta) {
+  const text = node.data.trim();
+  const yt = text.match(/(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)([\w-]+)/);
+  if (yt && text.startsWith('http')) {
+    delta.ops = [{ insert: { video: `https://www.youtube.com/embed/${yt[1]}?rel=0` } }];
+  }
+  return delta;
+});
+
+// Override video handler to clean YouTube URLs
+const videoHandler = () => {
+  let url = prompt('YouTube yoki video URL kiriting:');
+  if (!url) return;
+  const yt = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([\w-]+)/);
+  if (yt) url = `https://www.youtube.com/embed/${yt[1]}?rel=0`;
+  const range = quill.getSelection(true);
+  quill.insertEmbed(range.index, 'video', url);
+};
+quill.getModule('toolbar').addHandler('video', videoHandler);
+</script>
+{% endblock %}

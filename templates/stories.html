@@ -1,0 +1,11 @@
+{%extends 'base.html'%}{%block title%}Stories{%endblock%}{%block content%}
+<div class="container"><h1>📢 Stories</h1>
+<a href="/story/new/" class="btn primary" style="margin-bottom:1rem">+ Story qo'shish</a>
+<div class="stories-grid">{%for story in stories%}
+<a href="/story/{{story.pk}}/" class="story-card" style="text-decoration:none;color:inherit">
+<div class="story-head"><span>{{story.author.username}}</span> <span class="dash-muted">{{story.created|timesince}}</span></div>
+{%if story.image%}<img src="{{story.image.url}}" class="story-img">{%endif%}
+{%if story.body%}<p>{{story.body|truncatewords:15}}</p>{%endif%}
+<div class="dash-muted" style="margin-top:0.4rem">♥ {{story.likes.count}} · 👁 {{story.views.count}} · 💬 {{story.comments.count}}</div>
+</a>
+{%empty%}<p class="empty-state">Hozircha storilar yo'q.</p>{%endfor%}</div></div>{%endblock%}

@@ -1,0 +1,7 @@
+{%extends 'base.html'%}{%block title%}New Story{%endblock%}{%block content%}
+<div class="container"><h1>📢 Yangi Story</h1>
+<form method="post" enctype="multipart/form-data" class="story-form">{%csrf_token%}
+<textarea name="body" placeholder="Nimalar bo'lyapti?" rows="3"></textarea>
+<input type="file" name="image" accept="image/*">
+<button type="submit" class="btn primary">Yuborish</button>
+</form></div>{%endblock%}

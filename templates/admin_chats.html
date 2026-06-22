@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}Chats — Dashboard{% endblock %}
+
+{% block content %}
+<div class="dash">
+  <div class="dash-head">
+    <h1>💬 Barcha chatlar</h1>
+    <a href="/dashboard/" class="btn-outline">← Dashboard</a>
+  </div>
+
+  <div class="admin-chat-wrap">
+    <div class="admin-chat-list">
+      {% for conv in conversations %}
+      <a href="?u1={{ conv.user1.username }}&u2={{ conv.user2.username }}" class="admin-chat-item {% if u1 == conv.user1.username and u2 == conv.user2.username %}active{% endif %}">
+        <strong>{{ conv.user1.username }} ↔ {{ conv.user2.username }}</strong>
+        <span class="dash-muted">{{ conv.count }} xabar</span>
+      </a>
+      {% empty %}
+      <p class="dash-muted">Chatlar yo'q</p>
+      {% endfor %}
+    </div>
+
+    {% if chat_messages %}
+    <div class="admin-chat-thread">
+      <div class="admin-chat-thread-head">
+        <strong>{{ u1 }} ↔ {{ u2 }}</strong>
+      </div>
+      <div class="admin-chat-messages">
+        {% for msg in chat_messages %}
+        <div class="admin-msg">
+          <span class="admin-msg-sender">{{ msg.sender.username }}</span>
+          <span class="admin-msg-time">{{ msg.created|date:"d.m.Y H:i" }}</span>
+          {% if msg.body %}<p>{{ msg.body }}</p>{% endif %}
+          {% if msg.image %}<img src="{{ msg.image.url }}" alt="">{% endif %}
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% else %}
+    <div class="admin-chat-thread">
+      <p class="dash-muted" style="padding:2rem;text-align:center">Chatni tanlang ←</p>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

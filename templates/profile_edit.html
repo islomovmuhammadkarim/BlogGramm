@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+{% block title %}Profilni tahrirlash — BlogGram{% endblock %}
+{% block content %}
+<section class="login-page">
+  <div class="edit-card">
+    <h1>Profilni tahrirlash</h1>
+    {% if error %}<p class="edit-error">{{ error }}</p>{% endif %}
+    <form method="post" enctype="multipart/form-data" class="edit-form">
+      {% csrf_token %}
+      <div class="edit-field">
+        <label>Username</label>
+        <div class="username-wrap">
+          <span class="username-prefix">@</span>
+          <input type="text" name="username" id="usernameInput" value="{{ request.user.username }}" autocomplete="off">
+          <span id="usernameStatus" class="username-status"></span>
+        </div>
+      </div>
+      <div class="edit-row">
+        <div class="edit-field">
+          <label>Ism</label>
+          <input type="text" name="first_name" value="{{ request.user.first_name }}" placeholder="Ismingiz">
+        </div>
+        <div class="edit-field">
+          <label>Familiya</label>
+          <input type="text" name="last_name" value="{{ request.user.last_name }}" placeholder="Familiya">
+        </div>
+      </div>
+      <div class="edit-field">
+        <label>Bio</label>
+        <textarea name="bio" placeholder="O'zingiz haqingizda...">{{ profile.bio }}</textarea>
+      </div>
+      <div class="edit-field">
+        <label>Veb-sayt</label>
+        <input type="url" name="website" value="{{ profile.website }}" placeholder="https://...">
+      </div>
+      <div class="edit-row">
+        <div class="edit-field">
+          <label>Avatar</label>
+          <div class="file-wrap">
+            <div class="file-btn" id="avatarLabel">📷 Rasm tanlash</div>
+            <input type="file" name="avatar" accept="image/*" onchange="this.parentNode.querySelector('.file-btn').textContent='✓ '+this.files[0].name">
+          </div>
+        </div>
+        <div class="edit-field">
+          <label>Muqova</label>
+          <div class="file-wrap">
+            <div class="file-btn" id="coverLabel">🖼 Rasm tanlash</div>
+            <input type="file" name="cover" accept="image/*" onchange="this.parentNode.querySelector('.file-btn').textContent='✓ '+this.files[0].name; document.querySelectorAll('.color-opt').forEach(c=>c.classList.remove('selected'))">
+          </div>
+          <div class="color-picker">
+            <input type="hidden" name="cover_color" id="coverColor" value="">
+            <div class="color-opt" style="background:#6366f1" onclick="pickColor(this,'#6366f1')"></div>
+            <div class="color-opt" style="background:#ec4899" onclick="pickColor(this,'#ec4899')"></div>
+            <div class="color-opt" style="background:#14b8a6" onclick="pickColor(this,'#14b8a6')"></div>
+            <div class="color-opt" style="background:#f59e0b" onclick="pickColor(this,'#f59e0b')"></div>
+            <div class="color-opt" style="background:#3b82f6" onclick="pickColor(this,'#3b82f6')"></div>
+            <div class="color-opt" style="background:#1f2937" onclick="pickColor(this,'#1f2937')"></div>
+          </div>
+        </div>
+      </div>
+      <div class="edit-actions">
+        <button type="submit" class="btn primary">Saqlash</button>
+        <a href="/u/{{ request.user.username }}/" class="btn">Bekor qilish</a>
+      </div>
+    </form>
+  </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function pickColor(el, color) {
+  document.querySelectorAll('.color-opt').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  document.getElementById('coverColor').value = color;
+  const fileInput = document.querySelector('input[name="cover"]');
+  fileInput.value = '';
+  document.getElementById('coverLabel').textContent = '🖼 Rasm tanlash';
+}
+
+let timeout;
+const input = document.getElementById('usernameInput');
+const status = document.getElementById('usernameStatus');
+const original = input.value;
+
+input.addEventListener('input', () => {
+  clearTimeout(timeout);
+  const val = input.value.trim();
+  if (!val || val.length < 3) { status.textContent = ''; return; }
+  if (val === original) { status.textContent = ''; return; }
+  status.textContent = '...';
+  status.className = 'username-status';
+  timeout = setTimeout(async () => {
+    const r = await fetch(`/api/check-username/?username=${encodeURIComponent(val)}`);
+    const d = await r.json();
+    status.textContent = d.available ? '✓' : '✗';
+    status.className = 'username-status ' + (d.available ? 'available' : 'taken');
+  }, 400);
+});
+</script>
+{% endblock %}

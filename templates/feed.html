@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Feed — BlogGram{% endblock %}
+
+{% block content %}
+{% if posts %}
+<div class="feed-list">
+  {% for post in posts %}
+  <a href="/post/{{ post.slug }}/" class="feed-item">
+    <div class="feed-item-left">
+      <div class="feed-author">
+        <span class="mini-avatar">{% if post.author.profile.avatar %}<img src="{{ post.author.profile.avatar.url }}" alt="">{% else %}{{ post.author.username|first|upper }}{% endif %}</span>
+        <span class="feed-author-name">{{ post.author.username }}</span>
+        <span class="feed-date">{{ post.created|date:"M d" }}</span>
+      </div>
+      <h2 class="feed-item-title">{% if lang == "uz" %}{{ post.title_uz|default:post.title }}{% elif lang == "ru" %}{{ post.title_ru|default:post.title }}{% else %}{{ post.title_en|default:post.title }}{% endif %}</h2>
+      <p class="feed-item-body">{% if lang == "uz" %}{{ post.body_uz|default:post.body|striptags|truncatewords:20 }}{% elif lang == "ru" %}{{ post.body_ru|default:post.body|striptags|truncatewords:20 }}{% else %}{{ post.body_en|default:post.body|striptags|truncatewords:20 }}{% endif %}</p>
+      <span class="feed-item-likes">♥ {{ post.likes_count }}</span>
+    </div>
+    {% if post.cover %}
+    <div class="feed-item-cover"><img src="{{ post.cover.url }}" alt=""></div>
+    {% endif %}
+  </a>
+  {% endfor %}
+</div>
+{% else %}
+<div class="empty-feed">
+  <p data-i18n="no-feed">Your feed is empty.</p>
+  <p><a href="/explore/" data-i18n="explore-link">Explore</a> <span data-i18n="follow-hint">and follow some writers!</span></p>
+</div>
+{% endif %}
+{% endblock %}

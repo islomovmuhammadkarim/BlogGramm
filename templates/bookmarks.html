@@ -1,0 +1,5 @@
+{%extends 'base.html'%}{%block title%}Bookmarks{%endblock%}{%block content%}
+<div class="container"><h1>🔖 Saqlangan postlar</h1>
+{%if posts%}<div class="feed-list">{%for post in posts%}
+<a href="/post/{{post.slug}}/" class="feed-item"><div class="feed-item-left"><h2 class="feed-item-title">{{post.title}}</h2><p class="feed-item-body">{{post.body|striptags|truncatewords:15}}</p></div></a>
+{%endfor%}</div>{%else%}<p class="empty-state">Hali hech narsa saqlanmagan.</p>{%endif%}</div>{%endblock%}

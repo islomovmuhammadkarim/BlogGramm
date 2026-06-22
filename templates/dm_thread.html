@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+{% block title %}{{ other.username }} — Xabarlar{% endblock %}
+
+{% block content %}
+<div class="tg-wrap">
+  <div class="tg-head">
+    <a href="/dm/" class="tg-back">‹</a>
+    <a href="/u/{{ other.username }}/" class="tg-user">
+      <div class="tg-avatar">
+        {% if other.profile.avatar %}<img src="{{ other.profile.avatar.url }}" alt="">
+        {% else %}{{ other.username|first|upper }}{% endif %}
+      </div>
+      <div class="tg-user-info">
+        <span class="tg-username">{{ other.username }}</span>
+        {% if other.first_name %}<span class="tg-fullname">{{ other.first_name }} {{ other.last_name }}</span>{% endif %}
+      </div>
+    </a>
+  </div>
+
+  <div class="tg-messages" id="tgMessages">
+    {% for msg in chat_messages %}
+    <div class="tg-msg {% if msg.sender == request.user %}tg-sent{% else %}tg-recv{% endif %}" id="msg-{{ msg.pk }}">
+      <div class="tg-bubble">
+        {% if msg.image %}<img src="{{ msg.image.url }}" class="tg-media" onclick="window.open(this.src)">{% endif %}
+        {% if msg.video %}<video src="{{ msg.video.url }}" class="tg-media" controls></video>{% endif %}
+        {% if msg.body %}{{ msg.body }}{% endif %}
+        <span class="tg-meta">
+          {% if msg.edited %}<em>edited</em>{% endif %}
+          {% if msg.sender == request.user %}{% if msg.read %}✓✓{% else %}✓{% endif %}{% endif %}
+        </span>
+      </div>
+      {% if msg.sender == request.user %}
+      <div class="tg-msg-actions">
+        <button onclick="editMsg({{ msg.pk }}, '{{ msg.body|escapejs }}')">✎</button>
+        <form method="post" action="/dm/msg/{{ msg.pk }}/delete/" style="display:inline">{% csrf_token %}<button type="submit">✕</button></form>
+      </div>
+      {% endif %}
+    </div>
+    {% empty %}
+    <div class="tg-empty-msg">👋 Salomlashing!</div>
+    {% endfor %}
+  </div>
+
+  <form method="post" class="tg-form" id="msgForm" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="tg-form-inner">
+      <label class="tg-attach">
+        📎
+        <input type="file" name="image" accept="image/*,video/*" onchange="handleFile(this)" hidden>
+      </label>
+      <input type="text" name="body" placeholder="Xabar yozing..." autocomplete="off" id="msgInput">
+      <button type="submit">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+      </button>
+    </div>
+  </form>
+</div>
+
+<!-- Edit modal -->
+<div id="editModal" class="tg-edit-modal" style="display:none">
+  <form method="post" id="editForm" class="tg-edit-form">
+    {% csrf_token %}
+    <input type="text" name="body" id="editInput" required>
+    <button type="submit">✓</button>
+    <button type="button" onclick="closeEdit()">✕</button>
+  </form>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const el = document.getElementById('tgMessages');
+if (el) el.scrollTop = el.scrollHeight;
+
+document.getElementById('msgInput').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter' && !e.shiftKey && this.value.trim()) {
+    document.getElementById('msgForm').submit();
+  }
+});
+
+document.getElementById('msgInput').addEventListener('focus', function() {
+  setTimeout(() => { el.scrollTop = el.scrollHeight; }, 300);
+});
+
+if (window.visualViewport) {
+  window.visualViewport.addEventListener('resize', () => {
+    document.querySelector('.tg-form').style.bottom = (window.innerHeight - window.visualViewport.height) + 'px';
+    el.scrollTop = el.scrollHeight;
+  });
+}
+
+function handleFile(input) {
+  if (input.files[0]) {
+    // check if video
+    if (input.files[0].type.startsWith('video')) {
+      input.name = 'video';
+    } else {
+      input.name = 'image';
+    }
+    document.getElementById('msgForm').submit();
+  }
+}
+
+function editMsg(pk, body) {
+  document.getElementById('editModal').style.display = 'flex';
+  document.getElementById('editInput').value = body;
+  document.getElementById('editForm').action = '/dm/msg/' + pk + '/edit/';
+  document.getElementById('editInput').focus();
+}
+
+function closeEdit() {
+  document.getElementById('editModal').style.display = 'none';
+}
+</script>
+{% endblock %}

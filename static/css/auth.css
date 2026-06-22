@@ -1,0 +1,66 @@
+/* ═══════════════════════════════════════
+   BlogGram — Auth & Edit Styles
+   ═══════════════════════════════════════ */
+
+/* ── Login ── */
+.login-page { min-height: 80vh; display: flex; align-items: center; justify-content: center; padding: 2rem 1rem; }
+.login-card { width: 100%; max-width: 380px; background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 3rem 2.5rem; text-align: center; animation: fadeUp 0.4s ease; }
+.login-icon { margin-bottom: 1.5rem; color: var(--muted); }
+.login-card h1 { font-size: 1.5rem; font-weight: 700; color: var(--accent); margin-bottom: 0.6rem; letter-spacing: -0.02em; }
+.login-desc { font-size: 0.85rem; color: var(--muted); line-height: 1.6; margin-bottom: 2rem; }
+.login-status { margin-top: 1.2rem; font-size: 0.85rem; color: var(--muted); min-height: 1.2em; }
+.login-expired { margin-top: 1rem; font-size: 0.82rem; color: #e05; }
+.login-expired a { color: var(--accent); text-decoration: underline; }
+.login-footer { margin-top: 2rem; font-size: 0.75rem; color: var(--muted); display: flex; align-items: center; justify-content: center; gap: 0.4rem; }
+.tg-btn { display: inline-flex; align-items: center; gap: 0.7rem; background: #2AABEE; color: #fff; padding: 0.85rem 2rem; border-radius: 10px; font-size: 0.95rem; font-weight: 600; text-decoration: none; transition: background .2s, transform .15s; }
+.tg-btn:hover { background: #229ED9; transform: translateY(-1px); }
+
+/* ── Profile Edit ── */
+.edit-card { width: 100%; max-width: 440px; background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 2rem 1.8rem; animation: fadeUp 0.4s ease; }
+.edit-card h1 { font-size: 1.3rem; font-weight: 700; color: var(--accent); margin-bottom: 1.5rem; text-align: center; }
+.edit-error { background: rgba(224,0,80,0.1); color: #e05; padding: 0.6rem 1rem; border-radius: 8px; font-size: 0.82rem; margin-bottom: 1rem; text-align: center; }
+.edit-form { display: flex; flex-direction: column; gap: 1rem; }
+.edit-field { display: flex; flex-direction: column; gap: 0.3rem; width: 100%; min-width: 0; }
+.edit-field label { font-size: 0.72rem; color: var(--muted); font-weight: 500; text-transform: uppercase; letter-spacing: 0.04em; }
+.edit-field input, .edit-field textarea { width: 100%; padding: 0.6rem 0.8rem; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; color: var(--text); font-size: 0.85rem; font-family: inherit; transition: border-color .2s; box-sizing: border-box; }
+.edit-field input:focus, .edit-field textarea:focus { outline: none; border-color: var(--accent); }
+.edit-field textarea { min-height: 70px; resize: vertical; }
+.edit-field input[type="file"] { font-size: 0.75rem; padding: 0.45rem 0.6rem; }
+.edit-field .file-wrap { position: relative; }
+.edit-field .file-wrap input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+.edit-field .file-btn { display: flex; align-items: center; gap: 0.5rem; padding: 0.55rem 0.8rem; background: var(--bg); border: 1px dashed var(--border); border-radius: 8px; font-size: 0.8rem; color: var(--muted); cursor: pointer; transition: border-color .2s; }
+.edit-field .file-btn:hover { border-color: var(--accent); color: var(--text); }
+.color-picker { display: flex; gap: 0.4rem; margin-top: 0.5rem; }
+.color-opt { width: 20px; height: 20px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; transition: transform .15s, box-shadow .15s; }
+.color-opt:hover { transform: scale(1.2); }
+.color-opt.selected { border-color: var(--accent); box-shadow: 0 0 0 3px currentColor; transform: scale(1.2); }
+.edit-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; }
+.edit-actions { display: flex; gap: 0.6rem; margin-top: 0.5rem; }
+.edit-actions .btn { flex: 1; text-align: center; padding: 0.65rem; border-radius: 8px; font-size: 0.85rem; }
+.username-wrap { display: flex; align-items: center; width: 100%; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; transition: border-color .2s; box-sizing: border-box; }
+.username-wrap:focus-within { border-color: var(--accent); }
+.username-prefix { padding-left: 0.8rem; color: var(--muted); font-size: 0.85rem; flex-shrink: 0; }
+.username-wrap input { border: none !important; background: none !important; padding: 0.6rem 0.5rem !important; flex: 1; min-width: 0; color: var(--text); font-size: 0.85rem; outline: none; }
+.username-status { padding-right: 0.7rem; font-size: 0.85rem; font-weight: 700; flex-shrink: 0; }
+.username-status.available { color: #2d9; }
+.username-status.taken { color: #e05; }
+
+/* ── Auth form ── */
+.auth-form .field { margin-bottom: 1.2rem; }
+.auth-form label { display: block; font-size: 0.8rem; color: var(--muted); margin-bottom: 0.4rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.04em; }
+.auth-form input { width: 100%; padding: 0.7rem 1rem; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; color: var(--text); font-size: 0.95rem; font-family: inherit; transition: border-color .3s, box-shadow .3s; }
+.auth-form input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(255,255,255,0.05); }
+[data-theme="light"] .auth-form input:focus { box-shadow: 0 0 0 3px rgba(0,0,0,0.05); }
+.auth-form .btn { margin-top: 0.8rem; width: 100%; padding: 0.7rem; font-size: 0.95rem; }
+.auth-form p { margin-top: 1.4rem; font-size: 0.88rem; color: var(--muted); text-align: center; }
+.auth-form p a { color: var(--accent); text-decoration: none; font-weight: 600; transition: opacity .2s; }
+.auth-form p a:hover { opacity: 0.7; }
+.field-error { font-size: 0.78rem; color: #e05; display: block; margin-top: 0.25rem; }
+
+/* ── Admin Login ── */
+.admin-login-toggle { margin-top: 1.5rem; border: 1px solid var(--border); border-radius: 8px; padding: 0.7rem 1rem; }
+.admin-login-toggle summary { cursor: pointer; font-size: 0.82rem; color: var(--muted); }
+.admin-login-form { margin-top: 0.8rem; display: flex; flex-direction: column; gap: 0.5rem; }
+.admin-login-form input { padding: 0.5rem 0.7rem; border: 1px solid var(--border); border-radius: 6px; background: var(--bg); color: var(--text); font-size: 0.85rem; }
+.admin-login-form .btn { padding: 0.5rem; font-size: 0.85rem; }
+.login-error { color: #e05050; font-size: 0.8rem; }

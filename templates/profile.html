@@ -1,0 +1,182 @@
+{% extends "base.html" %}
+{% block title %}{{ profile_user.username }} — BlogGram{% endblock %}
+
+{% block content %}
+<div class="profile2">
+
+  <!-- Cover banner -->
+  <div class="profile2-cover" {% if profile_user.profile.cover_color and not profile_user.profile.cover %}style="background:{{ profile_user.profile.cover_color }}"{% endif %}>
+    {% if profile_user.profile.cover %}
+      <img src="{{ profile_user.profile.cover.url }}" alt="">
+    {% endif %}
+  </div>
+
+  <!-- Avatar + actions row -->
+  <div class="profile2-top">
+    <div class="profile2-avatar-wrap {% if has_story %}has-story{% endif %}">
+      <div class="profile2-avatar">
+        {% if has_story %}
+        <a href="/story/{{ latest_story.pk }}/" class="avatar-link">
+        {% elif profile_user.profile.avatar %}
+        <a href="{{ profile_user.profile.avatar.url }}" target="_blank" class="avatar-link">
+        {% else %}
+        <span class="avatar-link">
+        {% endif %}
+          {% if profile_user.profile.avatar %}
+            <img src="{{ profile_user.profile.avatar.url }}" alt="{{ profile_user.username }}">
+          {% else %}
+            {{ profile_user.username|first|upper }}
+          {% endif %}
+        {% if has_story or profile_user.profile.avatar %}</a>{% else %}</span>{% endif %}
+      </div>
+      {% if user == profile_user %}
+      <a href="/story/new/" class="story-add-btn" title="Story qo'shish">+</a>
+      {% endif %}
+    </div>
+    <div class="profile2-actions">
+      {% if user == profile_user %}
+        <a href="/profile/edit/" class="btn-outline" data-i18n="edit-profile">Edit profile</a>
+        <a href="/dm/" class="btn-outline" data-i18n="messages">Messages</a>
+      {% elif user.is_authenticated %}
+        <form method="post" action="/u/{{ profile_user.username }}/follow/" style="display:inline">
+          {% csrf_token %}
+          <button type="submit" class="{% if is_following %}btn-following{% else %}btn-follow{% endif %}">
+            {% if is_following %}<span data-i18n="following">Following</span>{% else %}<span data-i18n="follow">Follow</span>{% endif %}
+          </button>
+        </form>
+        <a href="/dm/{{ profile_user.username }}/" class="btn-outline" data-i18n="message">Message</a>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Info -->
+  <div class="profile2-info">
+    <h1 class="profile2-name">{{ profile_user.username }}</h1>
+    {% if profile_user.first_name %}<p class="profile2-fullname">{{ profile_user.first_name }} {{ profile_user.last_name }}</p>{% endif %}
+    {% if profile_user.profile.bio %}<p class="profile2-bio">{{ profile_user.profile.bio }}</p>{% endif %}
+    {% if profile_user.profile.website %}<a href="{{ profile_user.profile.website }}" class="profile-web" target="_blank">🔗 {{ profile_user.profile.website }}</a>{% endif %}
+
+    <!-- Stats -->
+    <div class="profile2-stats">
+      <div class="profile2-stat">
+        <strong>{{ posts.count }}</strong>
+        <span data-i18n="stat-posts">posts</span>
+      </div>
+      <button class="profile2-stat profile2-stat-btn" onclick="openModal('followers')">
+        <strong>{{ profile_user.profile.followers_count }}</strong>
+        <span data-i18n="stat-followers">followers</span>
+      </button>
+      <button class="profile2-stat profile2-stat-btn" onclick="openModal('following')">
+        <strong>{{ profile_user.profile.following_count }}</strong>
+        <span data-i18n="stat-following">following</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Posts list -->
+<div class="post-grid" style="margin-top:1.5rem">
+  {% for post in posts %}
+  <div class="post-card">
+    <a href="/post/{{ post.slug }}/" class="post-card-img">
+      {% if post.cover %}
+        <img src="{{ post.cover.url }}" alt="{{ post.title }}">
+      {% else %}
+        <div class="post-card-placeholder">{{ post.title|first|upper }}</div>
+      {% endif %}
+    </a>
+    <div class="post-card-body">
+      <a href="/post/{{ post.slug }}/" style="text-decoration:none">
+        <h2>{{ post.title }}</h2>
+      </a>
+      <div class="post-card-meta">{{ post.created|date:"M d, Y" }} · ♥ {{ post.likes_count }}</div>
+      <p>{{ post.body|striptags|truncatewords:15 }}</p>
+      {% if user == profile_user %}
+      <div class="post-card-actions">
+        <a href="/post/{{ post.slug }}/edit/" class="btn-outline plist-act-btn" data-i18n="edit" onclick="event.stopPropagation()">Edit</a>
+        <a href="/post/{{ post.slug }}/delete/" class="btn-outline plist-act-btn plist-act-delete" data-i18n="delete" onclick="event.stopPropagation()">Delete</a>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+  {% empty %}
+  <p class="empty-state" data-i18n="no-posts">No posts yet.</p>
+  {% endfor %}
+</div>
+
+{% if drafts %}
+<div class="profile-section">
+  <h3 style="margin:1.5rem 0 0.8rem">📝 Chernoviklar</h3>
+  <div class="feed-list">
+  {% for post in drafts %}
+  <a href="/post/{{ post.slug }}/edit/" class="feed-item">
+    <div class="feed-item-left">
+      <h2 class="feed-item-title">{{ post.title }} <span class="dash-muted">(draft)</span></h2>
+      <span class="feed-date">{{ post.created|date:"M d, Y" }}</span>
+    </div>
+  </a>
+  {% endfor %}
+  </div>
+</div>
+{% endif %}
+
+<!-- Followers / Following Modal -->
+<div class="user-modal" id="userModal" onclick="if(event.target===this)closeModal()">
+  <div class="user-modal-box">
+    <div class="user-modal-head">
+      <span class="user-modal-title" id="modalTitle">Followers</span>
+      <button class="user-modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="user-modal-list" id="modalList">
+      <div class="modal-loading">Loading...</div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+const profileUsername = "{{ profile_user.username }}";
+const isAuth = {{ user.is_authenticated|yesno:"true,false" }};
+const isSelf = {{ user.is_authenticated|yesno:"true,false" }} && "{{ user.username }}" === profileUsername;
+
+function openModal(type) {
+  const modal = document.getElementById('userModal');
+  const title = document.getElementById('modalTitle');
+  const list = document.getElementById('modalList');
+  const lang = getLang();
+  const labels = { uz: {followers:'Kuzatuvchilar', following:'Kuzatilayotganlar'}, ru: {followers:'Подписчики', following:'Подписки'}, en: {followers:'Followers', following:'Following'} };
+  title.textContent = (labels[lang] || labels.en)[type];
+  list.innerHTML = '<div class="modal-loading">...</div>';
+  modal.classList.add('open');
+  fetch(`/u/${profileUsername}/${type}.json`)
+    .then(r => r.json())
+    .then(data => renderModalList(list, data.users, type));
+}
+
+function renderModalList(list, users, type) {
+  if (!users.length) { list.innerHTML = '<p class="modal-empty">—</p>'; return; }
+  list.innerHTML = users.map(u => `
+    <div class="modal-user">
+      <a href="/u/${u.username}/" class="modal-user-info">
+        <span class="mini-avatar">${u.avatar ? `<img src="${u.avatar}" alt="">` : u.username[0].toUpperCase()}</span>
+        <span class="modal-username">${u.username}</span>
+      </a>
+      ${isAuth && u.username !== "{{ user.username }}" ? `
+        <form method="post" action="/u/${u.username}/follow/">
+          <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+          <button type="submit" class="${u.is_following ? 'btn-following btn-sm' : 'btn-follow btn-sm'}">
+            ${u.is_following ? (getLang()==='uz'?'Kuzatilmoqda':getLang()==='ru'?'Вы подписаны':'Following') : (getLang()==='uz'?'Kuzatish':getLang()==='ru'?'Подписаться':'Follow')}
+          </button>
+        </form>` : ''}
+    </div>
+  `).join('');
+}
+
+function closeModal() {
+  document.getElementById('userModal').classList.remove('open');
+}
+document.addEventListener('keydown', e => { if(e.key==='Escape') closeModal(); });
+</script>
+{% endblock %}

@@ -1,0 +1,187 @@
+{% extends "base.html" %}
+{% block title %}Dashboard — BlogGram{% endblock %}
+
+{% block content %}
+<div class="dash">
+  <div class="dash-head">
+    <h1>⚙️ Admin Dashboard</h1>
+  </div>
+
+  <div class="dash-stats">
+    <div class="dash-stat">
+      <span class="dash-stat-num">{{ stats.users }}</span>
+      <span class="dash-stat-label">Users</span>
+      <span class="dash-stat-sub">+{{ stats.new_users_week }} this week</span>
+    </div>
+    <div class="dash-stat">
+      <span class="dash-stat-num">{{ stats.posts }}</span>
+      <span class="dash-stat-label">Posts</span>
+      <span class="dash-stat-sub">+{{ stats.new_posts_week }} this week</span>
+    </div>
+    <div class="dash-stat">
+      <span class="dash-stat-num">{{ stats.comments }}</span>
+      <span class="dash-stat-label">Comments</span>
+    </div>
+    <div class="dash-stat">
+      <span class="dash-stat-num">{{ stats.messages }}</span>
+      <span class="dash-stat-label">Messages</span>
+    </div>
+    <div class="dash-stat">
+      <span class="dash-stat-num">{{ stats.stories }}</span>
+      <span class="dash-stat-label">Stories</span>
+    </div>
+    <div class="dash-stat">
+      <span class="dash-stat-num">{{ stats.notifications }}</span>
+      <span class="dash-stat-label">Notifications</span>
+    </div>
+  </div>
+
+  <!-- TABS -->
+  <div class="dash-tabs">
+    <button class="dash-tab active" onclick="showTab('users')">👥 Users</button>
+    <button class="dash-tab" onclick="showTab('posts')">📝 Posts</button>
+    <button class="dash-tab" onclick="showTab('chats')">💬 Chatlar</button>
+    <button class="dash-tab" onclick="showTab('stories')">📢 Stories</button>
+    <button class="dash-tab" onclick="showTab('notifs')">🔔 Notifications</button>
+    <button class="dash-tab" onclick="showTab('announce')">📣 E'lon</button>
+  </div>
+
+  <!-- USERS -->
+  <div class="dash-panel" id="panel-users">
+    <div class="dash-table">
+      {% for u in users %}
+      <div class="dash-row">
+        <div class="dash-row-info">
+          <a href="/u/{{ u.username }}/">{{ u.username }}{% if u.profile.is_banned %} 🚫{% endif %}</a>
+          <span class="dash-muted">{{ u.post_count }} posts · {{ u.date_joined|date:"d.m.Y" }}</span>
+        </div>
+        {% if u.pk != request.user.pk %}
+        <div class="dash-row-actions">
+          <form method="post" style="display:inline">{% csrf_token %}
+            <input type="hidden" name="action" value="ban_user">
+            <input type="hidden" name="uid" value="{{ u.pk }}">
+            <button type="submit" class="dash-btn-toggle">{% if u.profile.is_banned %}Unban{% else %}Ban{% endif %}</button>
+          </form>
+          <form method="post" style="display:inline">{% csrf_token %}
+            <input type="hidden" name="action" value="delete_user">
+            <input type="hidden" name="uid" value="{{ u.pk }}">
+            <button type="submit" class="dash-btn-del" onclick="return confirm('O\'chirilsinmi?')">✕</button>
+          </form>
+        </div>
+        {% endif %}
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- POSTS -->
+  <div class="dash-panel" id="panel-posts" style="display:none">
+    <div class="dash-table">
+      {% for p in posts %}
+      <div class="dash-row">
+        <div class="dash-row-info">
+          <a href="/post/{{ p.slug }}/">{{ p.title|truncatewords:6 }}</a>
+          <span class="dash-muted">{{ p.author.username }} · {% if p.published %}🟢{% else %}🔴{% endif %} · 👁 {{ p.views_count }}</span>
+        </div>
+        <div class="dash-row-actions">
+          <form method="post" style="display:inline">{% csrf_token %}
+            <input type="hidden" name="action" value="toggle_publish">
+            <input type="hidden" name="pid" value="{{ p.pk }}">
+            <button type="submit" class="dash-btn-toggle">{% if p.published %}Hide{% else %}Publish{% endif %}</button>
+          </form>
+          <form method="post" style="display:inline">{% csrf_token %}
+            <input type="hidden" name="action" value="delete_post">
+            <input type="hidden" name="pid" value="{{ p.pk }}">
+            <button type="submit" class="dash-btn-del" onclick="return confirm('O\'chirilsinmi?')">✕</button>
+          </form>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- CHATS -->
+  <div class="dash-panel" id="panel-chats" style="display:none">
+    {% if conversations %}
+    <div class="dash-table">
+      {% for conv in conversations %}
+      <a href="/dashboard/chats/?u1={{ conv.user1.username }}&u2={{ conv.user2.username }}" class="dash-row" style="text-decoration:none">
+        <div class="dash-row-info">
+          <span>{{ conv.user1.username }} ↔ {{ conv.user2.username }}</span>
+          <span class="dash-muted">{{ conv.count }} xabar · {{ conv.last|date:"d.m.Y H:i" }}</span>
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+    {% else %}
+    <p class="dash-muted">Chatlar yo'q</p>
+    {% endif %}
+  </div>
+
+  <!-- STORIES -->
+  <div class="dash-panel" id="panel-stories" style="display:none">
+    {% if recent_stories %}
+    <div class="dash-table">
+      {% for s in recent_stories %}
+      <div class="dash-row">
+        <div class="dash-row-info">
+          <span>{{ s.author.username }}</span>
+          <span class="dash-muted">{{ s.body|truncatewords:10 }} · {{ s.created|timesince }} ago</span>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <p class="dash-muted">Aktiv storilar yo'q</p>
+    {% endif %}
+  </div>
+
+  <!-- NOTIFICATIONS -->
+  <div class="dash-panel" id="panel-notifs" style="display:none">
+    {% if recent_notifs %}
+    <div class="dash-table">
+      {% for n in recent_notifs %}
+      <div class="dash-row">
+        <div class="dash-row-info">
+          <span>{{ n.actor.username }} → {{ n.user.username }}</span>
+          <span class="dash-muted">{{ n.get_notif_type_display }} · {{ n.created|timesince }} ago</span>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <p class="dash-muted">Notifications yo'q</p>
+    {% endif %}
+  </div>
+
+  <!-- ANNOUNCE -->
+  <div class="dash-panel" id="panel-announce" style="display:none">
+    <form method="post" class="announce-form">
+      {% csrf_token %}
+      <input type="hidden" name="action" value="announce">
+      <input type="text" name="title" placeholder="Sarlavha" required class="dash-input">
+      <textarea name="body" placeholder="Xabar matni..." required rows="2" class="dash-input"></textarea>
+      <button type="submit" class="btn primary" style="font-size:0.82rem">📣 Yuborish</button>
+    </form>
+    {% for a in announcements %}
+    <div class="dash-row" style="margin-top:0.5rem">
+      <div class="dash-row-info">
+        <strong>{{ a.title }}</strong>
+        <span class="dash-muted">{{ a.body|truncatewords:12 }} · {{ a.created|date:"d.m.Y" }}</span>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function showTab(name) {
+  document.querySelectorAll('.dash-panel').forEach(p => p.style.display = 'none');
+  document.querySelectorAll('.dash-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('panel-' + name).style.display = 'block';
+  event.target.classList.add('active');
+}
+</script>
+{% endblock %}

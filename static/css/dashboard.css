@@ -1,0 +1,55 @@
+/* ═══════════════════════════════════════
+   BlogGram — Dashboard Styles
+   ═══════════════════════════════════════ */
+
+.dash-head { margin-bottom: 2rem; }
+.dash-head h1 { font-size: 1.5rem; font-weight: 700; }
+.dash-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+.dash-stat { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.2rem; display: flex; flex-direction: column; gap: 0.2rem; }
+.dash-stat-num { font-size: 1.8rem; font-weight: 700; color: var(--accent); }
+.dash-stat-label { font-size: 0.85rem; color: var(--muted); }
+.dash-stat-sub { font-size: 0.75rem; color: #3390ec; }
+.dash-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+.dash-section { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.2rem; margin-top: 1rem; }
+.dash-section h2 { font-size: 1rem; font-weight: 600; margin-bottom: 1rem; }
+.dash-table { display: flex; flex-direction: column; gap: 0.5rem; }
+.dash-row { display: flex; align-items: center; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px solid var(--border); }
+.dash-row:last-child { border-bottom: none; }
+.dash-row-info { display: flex; flex-direction: column; gap: 0.15rem; }
+.dash-row-info a { font-size: 0.88rem; font-weight: 500; }
+.dash-row-info a:hover { text-decoration: underline; }
+.dash-muted { font-size: 0.75rem; color: var(--muted); }
+.dash-row-actions { display: flex; gap: 0.4rem; }
+.dash-btn-del { background: none; border: 1px solid #e05050; color: #e05050; border-radius: 6px; padding: 0.2rem 0.5rem; font-size: 0.75rem; cursor: pointer; transition: background .2s; }
+.dash-btn-del:hover { background: #e05050; color: #fff; }
+.dash-btn-toggle { background: none; border: 1px solid var(--border); color: var(--muted); border-radius: 6px; padding: 0.2rem 0.5rem; font-size: 0.75rem; cursor: pointer; transition: border-color .2s; }
+.dash-btn-toggle:hover { border-color: var(--accent); color: var(--accent); }
+
+/* ── Dashboard nav ── */
+.dash-nav { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.8rem; }
+.dash-nav a { padding: 0.35rem 0.7rem; border: 1px solid var(--border); border-radius: 20px; font-size: 0.78rem; color: var(--muted); transition: all .2s; }
+.dash-nav a:hover { border-color: var(--accent); color: var(--accent); }
+.dash-input { padding: 0.5rem 0.7rem; border: 1px solid var(--border); border-radius: 6px; background: var(--bg); color: var(--text); width: 100%; margin-bottom: 0.4rem; font-size: 0.85rem; resize: vertical; }
+.announce-form { display: flex; flex-direction: column; gap: 0.4rem; }
+
+/* ── Dashboard tabs ── */
+.dash-tabs { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 1.5rem 0 1rem; border-bottom: 1px solid var(--border); padding-bottom: 0.8rem; }
+.dash-tab { padding: 0.45rem 0.9rem; border: 1px solid var(--border); border-radius: 20px; font-size: 0.82rem; background: none; color: var(--muted); cursor: pointer; transition: all .2s; }
+.dash-tab:hover { border-color: var(--accent); color: var(--accent); }
+.dash-tab.active { background: var(--accent); color: var(--bg); border-color: var(--accent); }
+.dash-panel { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.2rem; }
+
+/* ── Admin Chats ── */
+.admin-chat-wrap { display: grid; grid-template-columns: 280px 1fr; gap: 1rem; min-height: 500px; }
+.admin-chat-list { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 0.5rem; overflow-y: auto; max-height: 600px; }
+.admin-chat-item { display: flex; flex-direction: column; padding: 0.6rem 0.8rem; border-radius: 8px; transition: background .15s; }
+.admin-chat-item:hover, .admin-chat-item.active { background: var(--bg); }
+.admin-chat-item strong { font-size: 0.85rem; }
+.admin-chat-thread { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; display: flex; flex-direction: column; }
+.admin-chat-thread-head { padding: 0.8rem 1rem; border-bottom: 1px solid var(--border); font-size: 0.9rem; }
+.admin-chat-messages { padding: 1rem; overflow-y: auto; max-height: 500px; display: flex; flex-direction: column; gap: 0.6rem; }
+.admin-msg { padding: 0.5rem 0.7rem; background: var(--bg); border-radius: 8px; }
+.admin-msg-sender { font-size: 0.8rem; font-weight: 600; color: #3390ec; }
+.admin-msg-time { font-size: 0.7rem; color: var(--muted); margin-left: 0.5rem; }
+.admin-msg p { margin-top: 0.2rem; font-size: 0.88rem; }
+.admin-msg img { max-width: 200px; border-radius: 6px; margin-top: 0.3rem; }
