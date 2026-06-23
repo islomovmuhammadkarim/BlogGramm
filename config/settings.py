@@ -94,4 +94,4 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Telegram Login
 TELEGRAM_BOT_TOKEN = os.environ.get('TELEGRAM_BOT_TOKEN', '')
 TELEGRAM_BOT_USERNAME = os.environ.get('TELEGRAM_BOT_USERNAME', '')
-SITE_URL = os.environ.get('SITE_URL', 'http://localhost:8000')
+SITE_URL = os.environ.get('SITE_URL', 'https://bloggramm-production.up.railway.app')
