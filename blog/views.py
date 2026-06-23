@@ -142,6 +142,8 @@ def post_create(request):
     if request.method == 'POST':
         title = request.POST.get('title', '').strip()
         body = request.POST.get('body', '').strip()
+        import re
+        body = re.sub(r'(<p><br></p>)+', '<p><br></p>', body)
         cover = request.FILES.get('cover')
         published = request.POST.get('action') == 'publish'
         scheduled = request.POST.get('scheduled_at', '').strip()
@@ -163,7 +165,11 @@ def post_edit(request, slug):
     post = get_object_or_404(Post, slug=slug, author=request.user)
     if request.method == 'POST':
         post.title = request.POST.get('title', post.title).strip()
-        post.body = request.POST.get('body', post.body).strip()
+        body = request.POST.get('body', post.body).strip()
+        # Bo'sh paragraflarni tozalash
+        import re
+        body = re.sub(r'(<p><br></p>)+', '<p><br></p>', body)
+        post.body = body
         post.published = request.POST.get('action') == 'publish'
         cat_id = request.POST.get('category')
         post.category = Category.objects.filter(id=cat_id).first() if cat_id else Category.objects.get_or_create(name="Dunyoga sig'maydi", defaults={'slug': 'dunyoga-sigmaydi'})[0]
