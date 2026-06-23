@@ -3,4 +3,3 @@ requests
 deep-translator
 gunicorn
 whitenoise
-Pillow
