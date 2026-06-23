@@ -50,31 +50,23 @@ def handle(update):
     tg_username = msg.get('from', {}).get('username', '')
     tg_id = msg.get('from', {}).get('id', chat_id)
 
-    # /start with token
+    # /start with token (saytdan kelgan deep link)
     if text.startswith('/start '):
         token = text.split(' ', 1)[1].strip()
         try:
             lt = LoginToken.objects.get(token=token, verified=False)
         except LoginToken.DoesNotExist:
-            send(chat_id, '❌ Link muddati tugagan yoki noto\'g\'ri.\n\nSaytda qaytadan "Login with Telegram" bosing.')
+            # Token noto'g'ri — oddiy start ga o'tish
+            _handle_start(chat_id, first_name, tg_username, tg_id)
             return
 
         if lt.is_expired():
             lt.delete()
-            send(chat_id, '⏰ Link muddati tugagan (5 daqiqa).\n\nSaytda qaytadan "Login with Telegram" bosing.')
+            _handle_start(chat_id, first_name, tg_username, tg_id)
             return
 
         # get or create user
-        try:
-            tg_user = TelegramUser.objects.get(telegram_id=tg_id)
-            user = tg_user.user
-            tg_user.first_name = first_name
-            tg_user.username = tg_username
-            tg_user.save()
-        except TelegramUser.DoesNotExist:
-            username = f'id{tg_id}'
-            user = User.objects.create_user(username=username, first_name=first_name)
-            TelegramUser.objects.create(user=user, telegram_id=tg_id, first_name=first_name, username=tg_username)
+        user = _get_or_create_user(tg_id, first_name, tg_username)
 
         # verify token
         lt.user = user
@@ -87,41 +79,9 @@ def handle(update):
             ]]})
         )
 
-    elif text == '/start':
-        site_url = settings.SITE_URL
-        # Foydalanuvchini tizimga kiritish uchun token yaratish
-        import secrets
-        token = secrets.token_urlsafe(32)
+    elif text == '/start' or text.startswith('/start'):
+        _handle_start(chat_id, first_name, tg_username, tg_id)
 
-        # get or create user
-        try:
-            tg_user = TelegramUser.objects.get(telegram_id=tg_id)
-            user = tg_user.user
-            tg_user.first_name = first_name
-            tg_user.username = tg_username
-            tg_user.save()
-        except TelegramUser.DoesNotExist:
-            username = f'id{tg_id}'
-            user = User.objects.create_user(username=username, first_name=first_name)
-            TelegramUser.objects.create(user=user, telegram_id=tg_id, first_name=first_name, username=tg_username)
-
-        # Token yaratish - verified va user bilan
-        lt = LoginToken.objects.create(token=token, user=user, verified=True)
-        login_url = f'{site_url}/auto-login/{token}/'
-
-        markup = json.dumps({'inline_keyboard': [
-            [{'text': '🌐 Saytga kirish', 'url': login_url}],
-        ]})
-        send(chat_id,
-            f'👋 Salom <b>{first_name}</b>!\n\n'
-            f'📝 <b>BlogGram</b> — yozuvchilar platformasi.\n\n'
-            f'✍️ Post yozing, o\'qing va baham ko\'ring\n'
-            f'💬 Boshqa yozuvchilar bilan muloqot qiling\n'
-            f'📢 Stories, Bookmarks, Notifications\n'
-            f'🌍 3 tilda (UZ, RU, EN)\n\n'
-            f'👇 Tugmani bosing — avtomatik kirasz:',
-            reply_markup=markup
-        )
     elif text == '/help':
         site_url = settings.SITE_URL
         send(chat_id,
@@ -130,26 +90,50 @@ def handle(update):
             f'/start — Ro\'yxatdan o\'tish va saytga kirish\n'
             f'/help — Yordam (shu xabar)\n\n'
             f'<b>🌐 Sayt imkoniyatlari:</b>\n'
-            f'✍️ <b>Post yozish</b> — Quill editor, rasm, video, YouTube\n'
-            f'📢 <b>Stories</b> — 24 soatlik postlar (like, comment, views)\n'
-            f'💬 <b>DM</b> — Xabar almashish, rasm yuborish\n'
-            f'🔖 <b>Bookmarks</b> — Postlarni saqlash\n'
-            f'🔔 <b>Notifications</b> — Like, follow, comment bildirishnomalar\n'
-            f'🔄 <b>Repost</b> — Postni ulashish\n'
-            f'🔍 <b>Explore</b> — Qidiruv, kategoriya filter\n'
-            f'🏷️ <b>Tags</b> — Teglar bo\'yicha postlar\n'
-            f'📅 <b>Scheduled</b> — Postni vaqtga rejalashtirish\n'
-            f'🌍 <b>3 til</b> — O\'zbekcha, Ruscha, Inglizcha\n'
-            f'💻 <b>Code Highlight</b> — Dasturchilar uchun\n\n'
-            f'<b>👤 Profil:</b>\n'
-            f'Avatar, cover, bio, website, followers/following\n\n'
-            f'<b>🔗 Sayt:</b> <code>{site_url}</code>',
+            f'✍️ Post yozish, 📢 Stories, 💬 DM\n'
+            f'🔖 Bookmarks, 🔔 Notifications\n'
+            f'🔄 Repost, 🔍 Explore, 🏷️ Tags\n'
+            f'📅 Scheduled posts, 🌍 3 til (UZ/RU/EN)\n\n'
+            f'🔗 <b>Sayt:</b> {site_url}',
             reply_markup=json.dumps({'inline_keyboard': [[
                 {'text': '🌐 Saytga o\'tish', 'url': f'{site_url}/'}
             ]]})
         )
     else:
         send(chat_id, '💡 /start — kirish | /help — yordam')
+
+
+def _get_or_create_user(tg_id, first_name, tg_username):
+    try:
+        tg_user = TelegramUser.objects.get(telegram_id=tg_id)
+        user = tg_user.user
+        tg_user.first_name = first_name
+        tg_user.username = tg_username
+        tg_user.save()
+    except TelegramUser.DoesNotExist:
+        username = f'id{tg_id}'
+        user = User.objects.create_user(username=username, first_name=first_name)
+        TelegramUser.objects.create(user=user, telegram_id=tg_id, first_name=first_name, username=tg_username)
+    return user
+
+
+def _handle_start(chat_id, first_name, tg_username, tg_id):
+    import secrets
+    site_url = settings.SITE_URL
+    user = _get_or_create_user(tg_id, first_name, tg_username)
+    token = secrets.token_urlsafe(32)
+    LoginToken.objects.create(token=token, user=user, verified=True)
+    login_url = f'{site_url}/auto-login/{token}/'
+
+    markup = json.dumps({'inline_keyboard': [
+        [{'text': '🌐 Saytga kirish', 'url': login_url}],
+    ]})
+    send(chat_id,
+        f'👋 Salom <b>{first_name}</b>!\n\n'
+        f'📝 <b>BlogGram</b> — yozuvchilar platformasi.\n\n'
+        f'👇 Tugmani bosing — avtomatik kirasiz:',
+        reply_markup=markup
+    )
 
 
 def main():
