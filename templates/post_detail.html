@@ -39,23 +39,6 @@
 
 <div class="article-body" id="articleBody">{% if lang == "uz" %}{{ post.body_uz|default:post.body|safe }}{% elif lang == "ru" %}{{ post.body_ru|default:post.body|safe }}{% else %}{{ post.body_en|default:post.body|safe }}{% endif %}</div>
 
-<script>
-document.querySelectorAll('.article-body iframe').forEach(f => {
-  let src = f.src || f.getAttribute('src') || '';
-  const m = src.match(/youtube\.com\/embed\/([\w-]+)/);
-  if (m) {
-    const id = m[1];
-    const wrap = document.createElement('div');
-    wrap.className = 'yt-embed';
-    wrap.innerHTML = `<a href="https://www.youtube.com/watch?v=${id}" target="_blank" rel="noopener">
-      <img src="https://img.youtube.com/vi/${id}/hqdefault.jpg" alt="YouTube Video">
-      <span class="yt-play">▶</span>
-    </a>`;
-    f.replaceWith(wrap);
-  }
-});
-</script>
-
 <div class="like-row">
   <form method="post" action="/post/{{ post.slug }}/like/" id="likeForm">
     {% csrf_token %}
@@ -110,6 +93,20 @@ document.querySelectorAll('.article-body iframe').forEach(f => {
 {% endblock %}
 
 {% block scripts %}
+<script>
+// YouTube iframe → thumbnail
+document.querySelectorAll('.article-body iframe').forEach(f => {
+  let src = f.src || f.getAttribute('src') || '';
+  const m = src.match(/youtube\.com\/embed\/([\w-]+)/);
+  if (m) {
+    const id = m[1];
+    const wrap = document.createElement('div');
+    wrap.className = 'yt-embed';
+    wrap.innerHTML = '<a href="https://www.youtube.com/watch?v=' + id + '" target="_blank"><img src="https://img.youtube.com/vi/' + id + '/hqdefault.jpg" alt="YouTube"><span class="yt-play">▶</span></a>';
+    f.replaceWith(wrap);
+  }
+});
+</script>
 <script>
 function replyTo(id, username) {
   document.getElementById('parentInput').value = id;
