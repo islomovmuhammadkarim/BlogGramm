@@ -15,6 +15,7 @@
   <nav class="topnav">
     <div class="topnav-inner">
       <a href="/" class="nav-logo">BlogGram</a>
+      <button class="nav-burger" onclick="document.querySelector('.nav-center').classList.toggle('open')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
       <div class="nav-center">
         <a href="/explore/" {% if request.resolver_match.url_name == 'explore' %}class="active"{% endif %} data-i18n="explore">Explore</a>
         {% if user.is_authenticated %}

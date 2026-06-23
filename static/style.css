@@ -941,7 +941,7 @@ a { color: inherit; text-decoration: none; }
   .explore-search input { font-size: 16px; }
   .explore-cats { gap: 0.3rem; }
   .cat-chip { padding: 0.3rem 0.6rem; font-size: 0.75rem; }
-  .bento-grid { grid-template-columns: 1fr; }
+  .bento-grid { grid-template-columns: 1fr; grid-auto-rows: auto; }
 
   /* Feed */
   .feed-list { gap: 0; }
@@ -1009,4 +1009,21 @@ a { color: inherit; text-decoration: none; }
   .profile2-actions { flex-direction: column; }
   .nav-center { gap: 0.6rem; }
   .nav-center a { font-size: 0.75rem; }
+}
+
+/* Mobile bento images */
+@media (max-width: 768px) {
+  .bento-card { grid-column: span 1 !important; grid-row: span 1 !important; }
+  .bento-img { min-height: 180px; }
+}
+
+/* ── Hamburger Menu ── */
+.nav-burger { display: none; background: none; border: none; color: var(--muted); cursor: pointer; padding: 0.3rem; }
+@media (max-width: 768px) {
+  .nav-burger { display: flex; align-items: center; }
+  .nav-center { display: none; position: absolute; top: 56px; left: 0; right: 0; background: var(--bg); border-bottom: 1px solid var(--border); flex-direction: column; padding: 1rem 1.5rem; gap: 0.8rem; z-index: 99; }
+  .nav-center.open { display: flex; }
+  .nav-center a { font-size: 0.95rem; }
+  .nav-right { gap: 0.4rem; }
+  .nav-logout { display: none; }
 }
