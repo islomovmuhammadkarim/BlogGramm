@@ -9,11 +9,12 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
+RUN mkdir -p media/avatars media/covers media/profile_covers media/dm_images media/stories media/group_images
 RUN python manage.py collectstatic --noinput
 
 EXPOSE 8000
 
 CMD python manage.py migrate && \
-    python -c "import os; os.environ.setdefault('DJANGO_SETTINGS_MODULE','config.settings'); import django; django.setup(); from django.contrib.auth.models import User; User.objects.filter(username='mrton').exists() or User.objects.create_superuser('mrton','','admin123')" && \
+    python -c "import os;os.environ.setdefault('DJANGO_SETTINGS_MODULE','config.settings');import django;django.setup();from django.contrib.auth.models import User;User.objects.filter(username='mrton').exists() or User.objects.create_superuser('mrton','','admin123')" && \
     python bot_polling.py & \
     gunicorn config.wsgi --bind 0.0.0.0:$PORT
