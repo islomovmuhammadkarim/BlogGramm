@@ -37,7 +37,7 @@
   <span class="translate-status" id="translateStatus"></span>
 </div>
 
-<div class="article-body" id="articleBody">{% if lang == "uz" %}{{ post.body_uz|default:post.body|safe }}{% elif lang == "ru" %}{{ post.body_ru|default:post.body|safe }}{% else %}{{ post.body_en|default:post.body|safe }}{% endif %}</div>
+<div class="article-body" id="articleBody">{{ post.body|safe }}</div>
 
 <div class="like-row">
   <form method="post" action="/post/{{ post.slug }}/like/" id="likeForm">

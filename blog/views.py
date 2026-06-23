@@ -169,6 +169,9 @@ def post_edit(request, slug):
         post.category = Category.objects.filter(id=cat_id).first() if cat_id else Category.objects.get_or_create(name="Dunyoga sig'maydi", defaults={'slug': 'dunyoga-sigmaydi'})[0]
         if request.FILES.get('cover'):
             post.cover = request.FILES['cover']
+        # Tarjima fieldlarni tozalash - qayta tarjima bo'ladi
+        post.title_uz = post.title_ru = post.title_en = ''
+        post.body_uz = post.body_ru = post.body_en = ''
         post.save()
         return redirect('post_detail', slug=post.slug)
     categories = Category.objects.all()
