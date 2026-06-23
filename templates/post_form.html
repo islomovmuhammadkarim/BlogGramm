@@ -122,5 +122,14 @@ const videoHandler = () => {
   quill.insertEmbed(range.index, 'video', url);
 };
 quill.getModule('toolbar').addHandler('video', videoHandler);
+
+// Rasmni bosganingizda o'chirish tugmasi
+quill.root.addEventListener('click', function(e) {
+  if (e.target.tagName === 'IMG') {
+    if (confirm('Rasmni o\'chirish?')) {
+      e.target.remove();
+    }
+  }
+});
 </script>
 {% endblock %}
