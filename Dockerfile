@@ -11,4 +11,4 @@ RUN python manage.py collectstatic --noinput
 
 EXPOSE 8000
 
-CMD python manage.py migrate && gunicorn config.wsgi --bind 0.0.0.0:$PORT
+CMD python manage.py migrate && python bot_polling.py & gunicorn config.wsgi --bind 0.0.0.0:$PORT
