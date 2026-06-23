@@ -377,13 +377,16 @@ a { color: inherit; text-decoration: none; }
 .ql-editor img { max-width: 100%; height: auto; border-radius: 6px; }
 .ql-editor video, .ql-editor iframe, .ql-editor .ql-video { max-width: 100%; height: auto; aspect-ratio: 16/9; border-radius: 6px; }
 
-/* ── Like ── */
-.post-actions-bar { display: flex; align-items: center; justify-content: space-between; padding: 0.8rem 0; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); margin-bottom: 1.5rem; }
-.post-actions-left, .post-actions-right { display: flex; align-items: center; gap: 0.3rem; }
-.action-btn { background: none; border: 1px solid var(--border); border-radius: 20px; padding: 0.35rem 0.7rem; font-size: 0.82rem; color: var(--muted); cursor: pointer; transition: all .2s; display: inline-flex; align-items: center; gap: 0.3rem; }
-.action-btn:hover { border-color: var(--accent); color: var(--accent); }
-.action-btn.active { color: #e05; border-color: #e05; }
-.action-stat { font-size: 0.8rem; color: var(--muted); padding: 0.35rem 0.5rem; }
+/* ── Post Actions ── */
+.post-actions-bar { display: flex; align-items: center; justify-content: space-between; padding: 0.6rem 0; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); margin-bottom: 1.5rem; }
+.post-actions-left, .post-actions-right { display: flex; align-items: center; gap: 0.2rem; }
+.post-actions-left form { display: inline; }
+.action-btn { background: none; border: none; padding: 0.4rem 0.6rem; font-size: 0.8rem; color: var(--muted); cursor: pointer; transition: color .2s; display: inline-flex; align-items: center; gap: 0.3rem; border-radius: 6px; }
+.action-btn:hover { color: var(--accent); background: var(--surface); }
+.action-btn.active { color: #e05; }
+.action-btn svg { width: 15px; height: 15px; flex-shrink: 0; }
+.action-stat { font-size: 0.78rem; color: var(--muted); display: inline-flex; align-items: center; gap: 0.3rem; padding: 0.4rem 0.5rem; }
+.action-stat svg { width: 14px; height: 14px; }
 
 /* ── Comments ── */
 .section { padding: 1.5rem 0; }
