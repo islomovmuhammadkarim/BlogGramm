@@ -4,3 +4,5 @@ deep-translator
 gunicorn
 whitenoise
 Pillow
+django-cloudinary-storage
+cloudinary
