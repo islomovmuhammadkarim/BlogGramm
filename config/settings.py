@@ -15,7 +15,7 @@ if env_path.exists():
 SECRET_KEY = os.environ.get('SECRET_KEY', 'dev-secret-key-change-in-production')
 DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '*').split(',')
-CSRF_TRUSTED_ORIGINS = [f'https://{h.strip().lstrip(".")}' for h in ALLOWED_HOSTS if h.strip()] if ALLOWED_HOSTS != ['*'] else ['https://bloggramm-production.up.railway.app']
+CSRF_TRUSTED_ORIGINS = ['https://bloggramm-production.up.railway.app']
 
 INSTALLED_APPS = [
     'django.contrib.admin',
