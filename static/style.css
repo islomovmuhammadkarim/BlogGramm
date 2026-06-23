@@ -378,11 +378,12 @@ a { color: inherit; text-decoration: none; }
 .ql-editor video, .ql-editor iframe, .ql-editor .ql-video { max-width: 100%; height: auto; aspect-ratio: 16/9; border-radius: 6px; }
 
 /* ── Like ── */
-.like-row { padding: 1.2rem 0; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); margin-bottom: 1.5rem; }
-.like-btn { background: none; border: none; cursor: pointer; font-size: 1.3rem; color: var(--muted); display: flex; align-items: center; gap: 0.4rem; transition: color .15s, transform .15s; padding: 0; }
-.like-btn:hover { color: #e05; transform: scale(1.1); }
-.like-btn.liked { color: #e05; }
-.like-btn span { font-size: 0.9rem; font-family: inherit; }
+.post-actions-bar { display: flex; align-items: center; justify-content: space-between; padding: 0.8rem 0; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); margin-bottom: 1.5rem; }
+.post-actions-left, .post-actions-right { display: flex; align-items: center; gap: 0.3rem; }
+.action-btn { background: none; border: 1px solid var(--border); border-radius: 20px; padding: 0.35rem 0.7rem; font-size: 0.82rem; color: var(--muted); cursor: pointer; transition: all .2s; display: inline-flex; align-items: center; gap: 0.3rem; }
+.action-btn:hover { border-color: var(--accent); color: var(--accent); }
+.action-btn.active { color: #e05; border-color: #e05; }
+.action-stat { font-size: 0.8rem; color: var(--muted); padding: 0.35rem 0.5rem; }
 
 /* ── Comments ── */
 .section { padding: 1.5rem 0; }

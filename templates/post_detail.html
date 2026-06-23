@@ -39,20 +39,25 @@
 
 <div class="article-body" id="articleBody">{{ post.body|safe }}</div>
 
-<div class="like-row">
-  <form method="post" action="/post/{{ post.slug }}/like/" id="likeForm">
-    {% csrf_token %}
-    <button type="submit" class="like-btn {% if liked %}liked{% endif %}" id="likeBtn">
-      {% if liked %}♥{% else %}♡{% endif %}
-      <span id="likeCount">{{ post.likes_count }}</span>
-    </button>
-  </form>
-  {% if user.is_authenticated %}
-  <form method="post" action="/post/{{ post.slug }}/bookmark/">{% csrf_token %}<button type="submit" class="like-btn {% if bookmarked %}liked{% endif %}">🔖</button></form>
-  <form method="post" action="/post/{{ post.slug }}/repost/">{% csrf_token %}<button type="submit" class="like-btn {% if reposted %}liked{% endif %}">🔄 {{ post.reposts.count }}</button></form>
-  {% endif %}
-  <span class="views-count">👁 {{ post.views_count }}</span>
+<div class="post-actions-bar">
+  <div class="post-actions-left">
+    <form method="post" action="/post/{{ post.slug }}/like/" id="likeForm">
+      {% csrf_token %}
+      <button type="submit" class="action-btn {% if liked %}active{% endif %}">{% if liked %}♥{% else %}♡{% endif %} {{ post.likes_count }}</button>
+    </form>
+    {% if user.is_authenticated %}
+    <form method="post" action="/post/{{ post.slug }}/bookmark/">{% csrf_token %}<button type="submit" class="action-btn {% if bookmarked %}active{% endif %}">🔖</button></form>
+    <form method="post" action="/post/{{ post.slug }}/repost/">{% csrf_token %}<button type="submit" class="action-btn {% if reposted %}active{% endif %}">🔄 {{ post.reposts.count }}</button></form>
+    {% endif %}
+  </div>
+  <div class="post-actions-right">
+    <span class="action-stat">👁 {{ post.views_count }}</span>
+    <button class="action-btn" onclick="copyLink()" title="Link nusxalash">🔗</button>
+  </div>
 </div>
+<script>
+function copyLink(){navigator.clipboard.writeText(window.location.href);event.target.textContent='✓';setTimeout(()=>event.target.textContent='🔗',1500);}
+</script>
 
 <section class="section">
   <p class="section-title">{{ post.comments.count }} comment{{ post.comments.count|pluralize }}</p>
